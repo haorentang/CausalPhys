@@ -1,0 +1,1 @@
+python evaluation/generate_responses.py --dataset_dir ./dataset --models qwen-vl-7b-local gpt-4o internvl-3-78b gpt-4o-mini gemini-2.5-flash --max_workers 10

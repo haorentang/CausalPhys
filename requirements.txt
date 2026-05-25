@@ -1,0 +1,18 @@
+# Core deep-learning / VLM stack
+torch
+transformers
+peft
+trl
+datasets
+accelerate
+qwen-vl-utils
+
+# Inference APIs (OpenAI-compatible endpoints for GPT-4o, Gemini, Claude, OpenRouter)
+openai
+
+# Data / utilities
+numpy
+pandas
+pillow
+tqdm
+huggingface_hub
