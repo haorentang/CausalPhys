@@ -9,10 +9,18 @@ qwen-vl-utils
 
 # Inference APIs (OpenAI-compatible endpoints for GPT-4o, Gemini, Claude, OpenRouter)
 openai
+anthropic
+httpx
 
-# Data / utilities
+# Rationale quality metrics (CRFT)
+bert_score
+rouge_score
+
+# Media / data utilities
 numpy
 pandas
 pillow
+opencv-python
+imageio
 tqdm
 huggingface_hub

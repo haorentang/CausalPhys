@@ -1,0 +1,10 @@
+[Question]
+{question}
+
+[Options]
+{options}
+
+[Ground Truth Final Answer]
+{ground_truth_answer}
+
+Write one paragraph (~80–150 tokens) explaining why the answer is correct.

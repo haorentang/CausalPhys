@@ -1,0 +1,16 @@
+[Question]
+{question}
+
+[Options]
+{options}
+
+[Ground Truth Final Answer]
+{ground_truth_answer}
+
+[Supporting Information] (reference only)
+Do not describe this information. Use it implicitly to answer the question:
+
+{graph}
+
+
+

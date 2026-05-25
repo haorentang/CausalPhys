@@ -34,7 +34,9 @@ evaluation_results/
 logs/
 nohup/
 _/
-dataset/
+# CausalPhys data downloads: ignore downloaded media/annotations, keep loader code
+dataset/*
+!dataset/*.py
 *.log
 *.out
 *.ckpt
