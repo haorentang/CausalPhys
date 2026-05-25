@@ -24,9 +24,63 @@ from openai import OpenAI
 from tqdm import tqdm
 from PIL import Image
 
-from ppo_vl.utils import load_api_key
-
 ProviderT = Literal["openai", "openrouter", "google", "anthropic"]
+
+
+def load_api_key(
+    env_var: str,
+    file_env_var: Optional[str] = None,
+    default_files: Optional[List[str]] = None,
+) -> Optional[str]:
+    """Resolve an API key without external dependencies.
+
+    Resolution order:
+      1. the environment variable ``env_var``;
+      2. the file path given by the environment variable ``file_env_var``;
+      3. each path in ``default_files`` (in order).
+
+    Files may contain either the raw key on its own, or shell-style
+    ``NAME="value"`` lines (e.g. a ``keys.txt``); in the latter case the value
+    whose name matches ``env_var`` is returned.
+    """
+    # 1. Direct environment variable
+    value = os.getenv(env_var)
+    if value:
+        return value.strip()
+
+    # 2./3. Candidate files
+    candidate_files: List[str] = []
+    if file_env_var:
+        path = os.getenv(file_env_var)
+        if path:
+            candidate_files.append(path)
+    if default_files:
+        candidate_files.extend(default_files)
+
+    for path in candidate_files:
+        if not path or not os.path.isfile(path):
+            continue
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                content = f.read()
+        except OSError:
+            continue
+
+        # Shell-style "NAME=value" lines (e.g. keys.txt)
+        for line in content.splitlines():
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            name, sep, val = line.partition("=")
+            if sep and name.strip() == env_var:
+                return val.strip().strip('"').strip("'")
+
+        # Otherwise treat the whole file as the raw key
+        stripped = content.strip()
+        if stripped and "=" not in stripped:
+            return stripped
+
+    return None
 
 
 class RateLimiter:
