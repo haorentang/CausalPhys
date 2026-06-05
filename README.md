@@ -2,6 +2,7 @@
 
 ### Causal Scaffolding for Physical Reasoning: A Benchmark for Causally-Informed Physical World Understanding in VLMs
 
+[![Paper](https://img.shields.io/badge/📄%20Paper-2606.05966-b31b1b.svg)](https://arxiv.org/abs/2606.05966)
 [![Dataset](https://img.shields.io/badge/🤗%20Dataset-haorentang%2Fcausalphys-yellow)](https://huggingface.co/datasets/haorentang/causalphys)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
@@ -62,11 +63,12 @@ bash scripts/run_train_rationale_from_checkpoint.sh
 ## Citation
 
 ```bibtex
-@inproceedings{causalphys2026,
-  title  = {Causal Scaffolding for Physical Reasoning: A Benchmark for
-            Causally-Informed Physical World Understanding in VLMs},
-  author = {CausalPhys Authors},
-  year   = {2026}
+@article{causalphys2026,
+  title   = {Causal Scaffolding for Physical Reasoning: A Benchmark for
+             Causally-Informed Physical World Understanding in VLMs},
+  author  = {CausalPhys Authors},
+  journal = {arXiv preprint arXiv:2606.05966},
+  year    = {2026}
 }
 ```
 
