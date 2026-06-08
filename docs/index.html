@@ -26,6 +26,23 @@
     .bibtex pre { background: #f5f5f5; border-radius: 6px; padding: 1rem; overflow-x: auto; }
     #crft-radar { width: 100%; max-width: 900px; height: 620px; margin: 0 auto; }
     .domain-tag { display:inline-block; padding:2px 10px; border-radius:999px; font-size:0.75rem; color:#fff; margin-right:4px; }
+  
+    /* full results table */
+    .results-tbl { border-collapse:collapse; font-size:0.74rem; margin:0 auto; min-width:1000px; }
+    .results-tbl th, .results-tbl td { border:1px solid #e6e6e6; padding:4px 8px; text-align:center; white-space:nowrap; }
+    .results-tbl thead th { background:#f3f5f9; font-weight:600; }
+    .results-tbl th.grp { background:#e7eefc; }
+    .results-tbl th.grp2 { background:#fdeede; }
+    .results-tbl th.cs { background:#fff7ee; }
+    .results-tbl .sz { font-weight:400; color:#888; font-size:0.66rem; }
+    .results-tbl td.met { font-weight:600; color:#444; background:#fafafa; }
+    .results-tbl td.dom { font-weight:700; background:#f3f5f9; vertical-align:middle; }
+    .results-tbl td.best { font-weight:700; color:#1f5fbf; background:#eef4ff; }
+    .results-tbl tr.avg td { background:#eafaf0; }
+    .results-tbl tr.avg td.best { background:#d6f2e0; color:#176c39; }
+    .results-tbl tr.zebra td { background:#fbfbfc; }
+    .results-tbl .stick { position:sticky; left:0; z-index:2; }
+    .results-tbl td.dom.stick { left:0; }
   </style>
 </head>
 <body>
@@ -215,6 +232,51 @@
     <img src="static/images/radars.png" alt="Radar plots of 11 VLMs" style="max-width:100%;margin-top:1rem;">
     <p class="figure-caption">
       Radar plots comparing 11 VLMs over the 16 CausalPhys subcategories across the four metrics.
+    </p>
+  </div>
+</section>
+
+<!-- ===================== FULL RESULTS TABLE ===================== -->
+<section class="section">
+  <div class="container is-fluid has-text-centered" style="max-width:1100px;">
+    <h2 class="title is-3">Full Benchmark Results</h2>
+    <p class="subtitle is-6" style="color:#555;">
+      11 SOTA VLMs across four causal domains on <b>ACC</b> / <b>EF</b> / <b>RA</b> / <b>DC</b>.
+      Best per row in <b>bold</b>. Scroll horizontally to see all models.
+    </p>
+    <div style="overflow-x:auto;margin-top:1rem;border:1px solid #e2e2e2;border-radius:8px;">
+    <table class="results-tbl">
+<thead>
+<tr><th class="stick mh"></th><th class="mh"></th><th colspan="7" class="grp">Open-Source</th><th colspan="4" class="grp grp2">Closed-Source</th></tr>
+<tr><th class="stick mh">Domain</th><th class="mh">Metric</th><th class="">InternVL3<br><span class="sz">78B</span></th><th class="">Qwen3-VL<br><span class="sz">32B</span></th><th class="">Qwen2.5-VL<br><span class="sz">3B</span></th><th class="">Qwen2-VL<br><span class="sz">7B</span></th><th class="">Llama-3.2<br><span class="sz">11B</span></th><th class="">Phi-4-MM<br><span class="sz">5.6B</span></th><th class="">Mistral-3.2<br><span class="sz">24B</span></th><th class="cs">GPT-4o<br><span class="sz">–</span></th><th class="cs">GPT-4o-mini<br><span class="sz">–</span></th><th class="cs">Gemini-2.5-Flash<br><span class="sz">–</span></th><th class="cs">Claude-Sonnet-4<br><span class="sz">–</span></th></tr>
+</thead>
+<tbody>
+<tr class=""><td rowspan="4" class="stick dom">🪄 Anticipation</td><td class="met">ACC</td><td class="">0.580</td><td class="">0.519</td><td class="">0.294</td><td class="">0.522</td><td class="">0.333</td><td class="">0.553</td><td class="">0.410</td><td class="best">0.601</td><td class="">0.591</td><td class="">0.582</td><td class="">0.532</td></tr>
+<tr class=""><td class="met">EF</td><td class="best">0.621</td><td class="">0.591</td><td class="">0.270</td><td class="">0.510</td><td class="">0.529</td><td class="">0.557</td><td class="">0.493</td><td class="">0.594</td><td class="">0.571</td><td class="">0.582</td><td class="">0.580</td></tr>
+<tr class=""><td class="met">RA</td><td class="">0.234</td><td class="">0.209</td><td class="">0.080</td><td class="">0.171</td><td class="">0.174</td><td class="">0.172</td><td class="">0.181</td><td class="best">0.235</td><td class="">0.202</td><td class="">0.206</td><td class="">0.224</td></tr>
+<tr class=""><td class="met">DC</td><td class="best">0.424</td><td class="">0.343</td><td class="">0.122</td><td class="">0.259</td><td class="">0.279</td><td class="">0.301</td><td class="">0.256</td><td class="">0.398</td><td class="">0.330</td><td class="">0.371</td><td class="">0.348</td></tr>
+<tr class="zebra"><td rowspan="4" class="stick dom">👁 Perception</td><td class="met">ACC</td><td class="best">0.626</td><td class="">0.569</td><td class="">0.449</td><td class="">0.520</td><td class="">0.399</td><td class="">0.557</td><td class="">0.483</td><td class="">0.589</td><td class="">0.598</td><td class="">0.592</td><td class="">0.587</td></tr>
+<tr class="zebra"><td class="met">EF</td><td class="best">0.787</td><td class="">0.782</td><td class="">0.711</td><td class="">0.656</td><td class="">0.697</td><td class="">0.714</td><td class="">0.722</td><td class="">0.774</td><td class="">0.769</td><td class="">0.741</td><td class="">0.735</td></tr>
+<tr class="zebra"><td class="met">RA</td><td class="best">0.398</td><td class="">0.388</td><td class="">0.269</td><td class="">0.233</td><td class="">0.249</td><td class="">0.282</td><td class="">0.368</td><td class="">0.341</td><td class="">0.303</td><td class="">0.309</td><td class="">0.349</td></tr>
+<tr class="zebra"><td class="met">DC</td><td class="best">0.466</td><td class="">0.405</td><td class="">0.348</td><td class="">0.313</td><td class="">0.346</td><td class="">0.350</td><td class="">0.348</td><td class="">0.462</td><td class="">0.401</td><td class="">0.457</td><td class="">0.422</td></tr>
+<tr class=""><td rowspan="4" class="stick dom">⚙️ Intervention</td><td class="met">ACC</td><td class="best">0.571</td><td class="">0.480</td><td class="">0.325</td><td class="">0.476</td><td class="">0.321</td><td class="">0.485</td><td class="">0.485</td><td class="best">0.571</td><td class="">0.513</td><td class="">0.557</td><td class="">0.567</td></tr>
+<tr class=""><td class="met">EF</td><td class="">0.655</td><td class="">0.594</td><td class="">0.395</td><td class="">0.556</td><td class="">0.504</td><td class="">0.550</td><td class="">0.624</td><td class="">0.659</td><td class="">0.629</td><td class="">0.645</td><td class="best">0.694</td></tr>
+<tr class=""><td class="met">RA</td><td class="">0.286</td><td class="">0.267</td><td class="">0.149</td><td class="">0.200</td><td class="">0.176</td><td class="">0.193</td><td class="">0.248</td><td class="">0.276</td><td class="">0.250</td><td class="">0.246</td><td class="best">0.308</td></tr>
+<tr class=""><td class="met">DC</td><td class="best">0.599</td><td class="">0.552</td><td class="">0.299</td><td class="">0.566</td><td class="">0.378</td><td class="">0.466</td><td class="">0.556</td><td class="">0.574</td><td class="">0.587</td><td class="">0.583</td><td class="">0.528</td></tr>
+<tr class="zebra"><td rowspan="4" class="stick dom">🎯 Goal-Orientation</td><td class="met">ACC</td><td class="">0.580</td><td class="">0.517</td><td class="">0.310</td><td class="">0.491</td><td class="">0.301</td><td class="">0.448</td><td class="">0.480</td><td class="best">0.588</td><td class="">0.516</td><td class="">0.544</td><td class="">0.470</td></tr>
+<tr class="zebra"><td class="met">EF</td><td class="best">0.706</td><td class="">0.698</td><td class="">0.537</td><td class="">0.621</td><td class="">0.576</td><td class="">0.644</td><td class="">0.686</td><td class="">0.678</td><td class="">0.676</td><td class="">0.661</td><td class="">0.647</td></tr>
+<tr class="zebra"><td class="met">RA</td><td class="">0.285</td><td class="best">0.286</td><td class="">0.182</td><td class="">0.193</td><td class="">0.208</td><td class="">0.204</td><td class="">0.241</td><td class="">0.238</td><td class="">0.224</td><td class="">0.197</td><td class="">0.224</td></tr>
+<tr class="zebra"><td class="met">DC</td><td class="best">0.434</td><td class="">0.356</td><td class="">0.134</td><td class="">0.247</td><td class="">0.226</td><td class="">0.315</td><td class="">0.382</td><td class="">0.345</td><td class="">0.325</td><td class="">0.339</td><td class="">0.344</td></tr>
+<tr class="avg"><td rowspan="4" class="stick dom">📊 Average</td><td class="met">ACC</td><td class="best">0.592</td><td class="">0.527</td><td class="">0.351</td><td class="">0.506</td><td class="">0.344</td><td class="">0.520</td><td class="">0.461</td><td class="">0.589</td><td class="">0.563</td><td class="">0.573</td><td class="">0.543</td></tr>
+<tr class="avg"><td class="met">EF</td><td class="best">0.697</td><td class="">0.679</td><td class="">0.486</td><td class="">0.587</td><td class="">0.586</td><td class="">0.623</td><td class="">0.629</td><td class="">0.679</td><td class="">0.665</td><td class="">0.660</td><td class="">0.663</td></tr>
+<tr class="avg"><td class="met">RA</td><td class="best">0.305</td><td class="">0.291</td><td class="">0.173</td><td class="">0.200</td><td class="">0.205</td><td class="">0.217</td><td class="">0.264</td><td class="">0.276</td><td class="">0.247</td><td class="">0.244</td><td class="">0.278</td></tr>
+<tr class="avg"><td class="met">DC</td><td class="best">0.472</td><td class="">0.404</td><td class="">0.228</td><td class="">0.331</td><td class="">0.307</td><td class="">0.350</td><td class="">0.367</td><td class="">0.440</td><td class="">0.399</td><td class="">0.431</td><td class="">0.404</td></tr>
+</tbody>
+    </table>
+    </div>
+    <p class="figure-caption" style="margin-top:0.8rem;">
+      Models reach moderate accuracy and entity faithfulness, but <b>relation awareness (RA) stays low (~0.2–0.3)</b> —
+      the persistent gap that motivates causally-informed training (CRFT).
     </p>
   </div>
 </section>
