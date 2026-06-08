@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CausalPhys: Causal Scaffolding for Physical Reasoning in VLMs</title>
+  <meta name="description" content="CausalPhys: A benchmark for causally-informed physical world understanding in VLMs, with expert-annotated causal graphs, causal-graph-grounded metrics, and Causal Rationale Fine-Tuning (CRFT).">
+
+  <!-- Bulma CSS + FontAwesome + Academic icons (CDN) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+
+  <style>
+    body { font-family: 'Google Sans', 'Noto Sans', sans-serif; }
+    .hero-title { font-weight: 700; line-height: 1.15; }
+    .author a { color: #3273dc; }
+    .author-block { display: inline-block; margin: 0 0.4rem; }
+    .pub-buttons .button { margin: 0.25rem; border-radius: 999px; }
+    .section { padding: 3rem 1.5rem; }
+    .teaser img { max-width: 100%; border-radius: 8px; }
+    .figure-caption { color: #555; font-size: 0.9rem; margin-top: 0.6rem; }
+    .content table { font-size: 0.82rem; }
+    .content table td, .content table th { padding: 0.35em 0.5em; }
+    .highlight { background: #fffbe6; }
+    .bibtex pre { background: #f5f5f5; border-radius: 6px; padding: 1rem; overflow-x: auto; }
+    #crft-radar { width: 100%; max-width: 900px; height: 620px; margin: 0 auto; }
+    .domain-tag { display:inline-block; padding:2px 10px; border-radius:999px; font-size:0.75rem; color:#fff; margin-right:4px; }
+  </style>
+</head>
+<body>
+
+<!-- ===================== HERO / TITLE ===================== -->
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop has-text-centered">
+      <h1 class="title is-2 hero-title">
+        Causal Scaffolding for Physical Reasoning
+      </h1>
+      <h2 class="subtitle is-4" style="margin-top:0.5rem;">
+        A Benchmark for Causally-Informed Physical World Understanding in VLMs
+      </h2>
+      <p class="subtitle is-5" style="color:#3273dc;font-weight:600;margin-top:0.5rem;">
+        <span style="font-variant: small-caps; letter-spacing:0.5px;">CausalPhys</span>
+      </p>
+
+      <!-- Authors -->
+      <div class="is-size-5" style="margin-top:1.2rem;">
+        <span class="author-block">Tianyi Tang<sup>1</sup>,</span>
+        <span class="author-block">Zhuoyi Lin<sup>2,†</sup>,</span>
+        <span class="author-block">Zeyu Feng<sup>1</sup>,</span>
+        <span class="author-block">Tianyi Ma<sup>1,3</sup>,</span>
+        <span class="author-block">Yew-Soon Ong<sup>1,3</sup>,</span>
+        <span class="author-block">Ivor Tsang<sup>1,3</sup>,</span>
+        <span class="author-block">Haiyan Yin<sup>1,†</sup></span>
+      </div>
+
+      <!-- Affiliations -->
+      <div class="is-size-6" style="margin-top:0.8rem;color:#444;">
+        <p><sup>1</sup>CFAR &amp; IHPC, A*STAR, Singapore &nbsp;&nbsp;
+           <sup>2</sup>I²R, A*STAR, Singapore &nbsp;&nbsp;
+           <sup>3</sup>Nanyang Technological University, Singapore</p>
+        <p style="margin-top:0.3rem;"><sup>†</sup>Corresponding authors</p>
+      </div>
+
+      <!-- Buttons -->
+      <div class="pub-buttons" style="margin-top:1.6rem;">
+        <a class="button is-dark" href="#" target="_blank">
+          <span class="icon"><i class="fas fa-file-pdf"></i></span><span>Paper</span>
+        </a>
+        <a class="button is-dark" href="https://arxiv.org/abs/2606.05966" target="_blank">
+          <span class="icon"><i class="ai ai-arxiv"></i></span><span>arXiv</span>
+        </a>
+        <a class="button is-dark" href="https://github.com/haorentang/CausalPhys" target="_blank">
+          <span class="icon"><i class="fab fa-github"></i></span><span>Code</span>
+        </a>
+        <a class="button is-dark" href="https://huggingface.co/datasets/haorentang/causalphys" target="_blank">
+          <span class="icon">🤗</span><span>Dataset</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== TEASER ===================== -->
+<section class="section" style="padding-top:0;">
+  <div class="container is-max-desktop has-text-centered teaser">
+    <img src="static/images/figure1.png" alt="CausalPhys overview">
+    <p class="figure-caption">
+      <b>Overview of the CausalPhys benchmark.</b> CausalPhys spans four domains —
+      Perception, Anticipation, Intervention, and Goal-Orientation. Beyond ground-truth
+      QA pairs, each question is paired with an expert-annotated <b>causal DAG</b> capturing
+      <i>object–attribute–event</i> dependencies that govern the scene's physical dynamics.
+    </p>
+  </div>
+</section>
+
+<!-- ===================== ABSTRACT ===================== -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Abstract</h2>
+    <div class="content has-text-justified is-size-5" style="margin-top:1.5rem;">
+      <p>
+        Understanding and reasoning about the physical world is the foundation of intelligent
+        behavior, yet state-of-the-art vision-language models (VLMs) still fail at causal
+        physical reasoning, often producing plausible but incorrect answers. To address this gap,
+        we introduce <b>CausalPhys</b>, a benchmark of over 3,000 carefully curated video- and
+        image-based questions spanning four domains: Perception, Anticipation, Intervention, and
+        Goal Orientation. Each question is paired with an <b>expert-annotated causal graph</b>
+        capturing object–attribute–event dependencies, enabling interpretable and fine-grained
+        evaluation of causal understanding. Building on this, we formulate a
+        <b>causal-graph-grounded metric</b> that quantitatively measures how well a model's
+        chain-of-thought reasoning aligns with the correct causal relations, moving beyond
+        answer-only accuracy. Using this metric, we conduct a comprehensive analysis of leading
+        VLMs, revealing systematic gaps in capturing causal dependencies. To address these
+        limitations, we further propose <b>Causal Rationale-informed Fine-Tuning (CRFT)</b>,
+        which explicitly aligns VLM reasoning with causal structures. Extensive experiments
+        demonstrate that CRFT substantially enhances both reasoning accuracy and interpretability
+        across multiple model backbones.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== INTERACTIVE DEMO ===================== -->
+<section class="section" id="demo" style="background:#eef4ff;">
+  <div class="container is-max-desktop has-text-centered">
+    <h2 class="title is-3">Try the Benchmark Yourself</h2>
+    <p class="subtitle is-6" style="color:#555;">
+      Pick a subcategory, read the scene, choose an answer, and hit <b>Validate</b> —
+      then see the ground truth, the causal chain, and how three SOTA VLMs did.
+    </p>
+
+    <div class="box" style="max-width:760px;margin:1.5rem auto;text-align:left;border-radius:12px;">
+      <!-- selector -->
+      <div class="field">
+        <label class="label">Subcategory</label>
+        <div class="control">
+          <div class="select is-fullwidth is-medium">
+            <select id="demo-select"></select>
+          </div>
+        </div>
+      </div>
+
+      <!-- scene -->
+      <figure class="image" style="margin:1rem 0;">
+        <img id="demo-img" src="" alt="scene" style="border-radius:8px;border:1px solid #ddd;">
+      </figure>
+
+      <!-- question -->
+      <p id="demo-q" class="is-size-5" style="font-weight:600;margin-bottom:0.8rem;"></p>
+
+      <!-- options -->
+      <div id="demo-options"></div>
+
+      <!-- validate -->
+      <div class="has-text-centered" style="margin-top:1.2rem;">
+        <button id="demo-validate" class="button is-link is-medium" disabled>Validate</button>
+      </div>
+
+      <!-- result -->
+      <div id="demo-result" style="display:none;margin-top:1.2rem;"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== TAXONOMY ===================== -->
+<section class="section" style="background:#fafafa;">
+  <div class="container is-max-desktop has-text-centered">
+    <h2 class="title is-3">Benchmark &amp; Taxonomy</h2>
+    <p class="subtitle is-6" style="color:#555;">
+      3,062 questions · 4 causal domains · 16 fine-grained subcategories · 11 source datasets
+    </p>
+    <div class="columns is-vcentered" style="margin-top:1rem;">
+      <div class="column is-half">
+        <img src="static/images/piechart.png" alt="CausalPhys taxonomy" style="max-width:100%;">
+      </div>
+      <div class="column is-half has-text-left">
+        <p style="margin-bottom:0.8rem;">
+          Each of the four major categories maps to a level of <b>Pearl's causal ladder</b>:
+        </p>
+        <ul>
+          <li><span class="domain-tag" style="background:#4e79a7;">Perception</span> P(Y | X) — recognize objects &amp; attributes (association)</li>
+          <li style="margin-top:.5rem;"><span class="domain-tag" style="background:#f28e2b;">Anticipation</span> P(Y | do(X)) — predict under manipulation</li>
+          <li style="margin-top:.5rem;"><span class="domain-tag" style="background:#59a14f;">Intervention</span> P(Y | do(X')) — reason about explicit interventions</li>
+          <li style="margin-top:.5rem;"><span class="domain-tag" style="background:#e15759;">Goal-Orientation</span> P(Goal | do(X)) — counterfactual goal inference</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== EVALUATION METRICS ===================== -->
+<section class="section">
+  <div class="container is-max-desktop has-text-centered">
+    <h2 class="title is-3">Causal-Graph-Grounded Metrics</h2>
+    <img src="static/images/metric.png" alt="Evaluation pipeline" style="max-width:100%;margin-top:1rem;">
+    <p class="figure-caption">
+      Given a visual input and a query, the tested VLM produces a rationale (CoT) and a final
+      answer. A judge LLM then scores the rationale on three causal-aware metrics —
+      <b>Entity Faithfulness (EF)</b>, <b>Relation Awareness (RA)</b>,
+      <b>Description Correctness (DC)</b> — alongside <b>Accuracy (ACC)</b>.
+    </p>
+  </div>
+</section>
+
+<!-- ===================== RESULTS (RADAR) ===================== -->
+<section class="section" style="background:#fafafa;">
+  <div class="container is-max-desktop has-text-centered">
+    <h2 class="title is-3">How well do VLMs reason causally?</h2>
+    <p class="subtitle is-6" style="color:#555;">
+      Models reliably identify entities (high EF ≈ 0.7) but fail to compose them into causal
+      relations (low RA ≈ 0.2–0.3) — a persistent <b>EF–RA gap</b>.
+    </p>
+    <img src="static/images/radars.png" alt="Radar plots of 11 VLMs" style="max-width:100%;margin-top:1rem;">
+    <p class="figure-caption">
+      Radar plots comparing 11 VLMs over the 16 CausalPhys subcategories across the four metrics.
+    </p>
+  </div>
+</section>
+
+<!-- ===================== CRFT METHOD ===================== -->
+<section class="section">
+  <div class="container is-max-desktop has-text-centered">
+    <h2 class="title is-3">Causal Rationale Fine-Tuning (CRFT)</h2>
+    <p class="subtitle is-6" style="color:#555;">
+      CRFT aligns a VLM's chain-of-thought with the ground-truth causal graph, jointly supervising
+      both the rationale and the final answer.
+    </p>
+
+    <!-- CRFT results table -->
+    <div class="content" style="margin-top:2rem;display:inline-block;text-align:left;">
+      <h3 class="title is-5 has-text-centered">CRFT on Qwen2-VL-7B (CausalPhys)</h3>
+      <table class="table is-bordered is-striped is-narrow is-hoverable">
+        <thead>
+          <tr><th>Method</th><th>ACC ↑</th><th>EF ↑</th><th>RA ↑</th><th>DC ↑</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Qwen2-VL-7B (vanilla)</td><td>0.535</td><td>0.598</td><td>0.213</td><td>0.291</td></tr>
+          <tr><td>SFT (answer-only)</td><td>0.676</td><td>0.325</td><td>0.091</td><td>0.265</td></tr>
+          <tr><td>CoT-SFT</td><td>0.657</td><td>0.428</td><td>0.208</td><td>0.216</td></tr>
+          <tr class="highlight"><td><b>CRFT (ours)</b></td><td><b>0.707</b></td><td><b>0.597</b></td><td><b>0.255</b></td><td><b>0.349</b></td></tr>
+        </tbody>
+      </table>
+      <p class="figure-caption">
+        CRFT outperforms CoT-SFT by <b>+5pp ACC</b> with substantially larger gains on the
+        causal metrics (EF/RA/DC), and also transfers to PhysBench (<b>+4%</b> overall).
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== BIBTEX ===================== -->
+<section class="section">
+  <div class="container is-max-desktop bibtex">
+    <h2 class="title is-3">BibTeX</h2>
+    <pre><code>@inproceedings{tang2026causalphys,
+  title     = {Causal Scaffolding for Physical Reasoning: A Benchmark for
+               Causally-Informed Physical World Understanding in VLMs},
+  author    = {Tang, Tianyi and Lin, Zhuoyi and Feng, Zeyu and Ma, Tianyi and
+               Ong, Yew-Soon and Tsang, Ivor and Yin, Haiyan},
+  booktitle = {Proceedings of the 32nd ACM SIGKDD Conference on Knowledge
+               Discovery and Data Mining (KDD)},
+  year      = {2026}
+}</code></pre>
+  </div>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="footer" style="padding:2rem 1.5rem;">
+  <div class="content has-text-centered is-size-7" style="color:#777;">
+    <p>
+      Website template adapted from the
+      <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">Academic Project Page Template</a>.
+      Built for CausalPhys (KDD 2026).
+    </p>
+  </div>
+</footer>
+
+<!-- ===================== DEMO DATA + LOGIC ===================== -->
+<style>
+  .demo-opt { display:block; width:100%; text-align:left; margin:0.4rem 0; padding:0.7rem 1rem;
+              border:1.5px solid #d0d7e2; border-radius:8px; background:#fff; cursor:pointer;
+              font-size:1rem; transition:all .15s; }
+  .demo-opt:hover { border-color:#3273dc; background:#f5f9ff; }
+  .demo-opt.sel  { border-color:#3273dc; background:#e8f1ff; font-weight:600; }
+  .demo-opt.correct  { border-color:#23924a; background:#e6f7ec; }
+  .demo-opt.wrong    { border-color:#d62728; background:#fdecec; }
+  .demo-opt .ltr { display:inline-block; width:1.6em; font-weight:700; color:#3273dc; }
+  .vlm-row { display:flex; align-items:center; justify-content:space-between;
+             padding:0.45rem 0.8rem; border-radius:6px; margin:0.3rem 0; background:#f7f7f9; }
+</style>
+<script>
+const DEMO = [
+  {id:1, domain:"Anticipation", sub:"Collision Prediction", img:"static/demo/case1.png",
+   q:"Based on the current frames, will the car collide?",
+   opts:[["A","Yes"],["B","No"]], gt:"A",
+   graph:"Relative speed and distance between the two cars, plus the target car changing lane, jointly cause a collision.",
+   vlms:[["GPT-4o","A",true],["Gemini 2.5 Flash","A",true],["Claude Sonnet 4.5","B",false]]},
+  {id:2, domain:"Anticipation", sub:"Intention Speculation", img:"static/demo/case2.png",
+   q:"What will the person's next move be?",
+   opts:[["A","Pick up cafetiere plunger"],["B","Pick up cutlery"],["C","Close cupboard"],["D","Put plate into cupboard"]], gt:"C",
+   graph:"The person's hand on the open cupboard leads to the next action: closing the cupboard.",
+   vlms:[["GPT-4o","D",false],["Gemini 2.5 Flash","A",false],["Claude Sonnet 4.5","A",false]]},
+  {id:3, domain:"Anticipation", sub:"Fluid Flow", img:"static/demo/case3.png",
+   q:"Where is the liquid from the container expected to be poured?",
+   opts:[["A","Into the other container"],["B","No outflow"],["C","Onto the table"],["D","Onto the hand"]], gt:"C",
+   graph:"The measuring cup is tilted while positioned away from the glass, so its liquid flows onto the table.",
+   vlms:[["GPT-4o","A",false],["Gemini 2.5 Flash","A",false],["Claude Sonnet 4.5","A",false]]},
+  {id:4, domain:"Anticipation", sub:"Deformation", img:"static/demo/case4.png",
+   q:"What will the deformation of the garment be if the robot arm continues its action?",
+   opts:[["A","Compress vertically"],["B","Stretch horizontally and vertically"],["C","Compress horizontally and vertically"],["D","No deformation expected"]], gt:"B",
+   graph:"The robot arm pulls the garment to the up-left, stretching it both vertically and horizontally.",
+   vlms:[["GPT-4o","B",true],["Gemini 2.5 Flash","C",false],["Claude Sonnet 4.5","B",true]]},
+  {id:13, domain:"Perception", sub:"Optical Inference", img:"static/demo/case13.png",
+   q:"Where are the computer monitors located relative to the camera?",
+   opts:[["A","Front left"],["B","Back left"],["C","Front right"],["D","Back right"]], gt:"B",
+   graph:"The monitors are visible only in the mirror; the mirror's back-left-to-front-right angle places them back-left of the camera.",
+   vlms:[["GPT-4o","D",false],["Gemini 2.5 Flash","B",true],["Claude Sonnet 4.5","D",false]]},
+  {id:14, domain:"Perception", sub:"Mechanics Reasoning", img:"static/demo/case14.png",
+   q:"How does the hand move relative to the cup?",
+   opts:[["A","Left"],["B","Up"],["C","Right"],["D","Down"]], gt:"C",
+   graph:"The hand moves left-to-right while the cup stays stationary, yielding a left-to-right relative movement.",
+   vlms:[["GPT-4o","C",true],["Gemini 2.5 Flash","D",false],["Claude Sonnet 4.5","D",false]]},
+  {id:15, domain:"Perception", sub:"Scene Reconstruction", img:"static/demo/case15.png",
+   q:"Which direction is the ping-pong ball flying to?",
+   opts:[["A","To the red player"],["B","To the blue player"]], gt:"B",
+   graph:"The red player's forehand motion hits the ball, sending it flying toward the blue player.",
+   vlms:[["GPT-4o","B",true],["Gemini 2.5 Flash","B",true],["Claude Sonnet 4.5","B",true]]},
+  {id:16, domain:"Perception", sub:"Containability", img:"static/demo/case16.png",
+   q:"Which glass on the table can be nested?",
+   opts:[["A","Glass A"],["B","Glass B"],["C","Glass C"],["D","Glass D"]], gt:"A",
+   graph:"Glass A's shape (wider opening, narrower body) makes it the glass that can be nested.",
+   vlms:[["GPT-4o","B",false],["Gemini 2.5 Flash","D",false],["Claude Sonnet 4.5","C",false]]},
+  {id:10, domain:"Intervention", sub:"Spatial Manipulation", img:"static/demo/case10.png",
+   q:"Could the player in yellow still receive the ball if it were passed 50 cm more to the right of the current trajectory?",
+   opts:[["A","Yes"],["B","No"]], gt:"A",
+   graph:"Shifting the ball's trajectory 50 cm to the right still lets the yellow player receive the ball.",
+   vlms:[["GPT-4o","A",true],["Gemini 2.5 Flash","A",true],["Claude Sonnet 4.5","B",false]]},
+  {id:12, domain:"Intervention", sub:"Action Substitution", img:"static/demo/case12.png",
+   q:"If the bottle were pushed suddenly forward, in which direction would it most likely fall?",
+   opts:[["A","Towards the slipper"],["B","Towards the wall"],["C","Towards the plant"]], gt:"C",
+   graph:"Given the relative positions of slipper, wall and plant around the bottle, pushing it forward makes it fall towards the plant.",
+   vlms:[["GPT-4o","A",false],["Gemini 2.5 Flash","C",true],["Claude Sonnet 4.5","A",false]]},
+  {id:11, domain:"Intervention", sub:"Temporal Shifting", img:"static/demo/case11.png",
+   q:"Assuming Photo N was taken right now, which of the following scenes is NOT possible after 5 hours?",
+   opts:[["A","Photo A"],["B","Photo B"],["C","Photo C"]], gt:"A",
+   graph:"The current dusk time plus a 5-hour shift yields night, which rules out the daylight Photo A.",
+   vlms:[["GPT-4o","B",false],["Gemini 2.5 Flash","A",true],["Claude Sonnet 4.5","C",false]]},
+  {id:9, domain:"Intervention", sub:"Viewpoint Transformation", img:"static/demo/case9.png",
+   q:"Where is the TV located relative to the camera in the second image?",
+   opts:[["A","Front"],["B","Back"],["C","Left"],["D","Right"]], gt:"C",
+   graph:"A clockwise 90° viewpoint transformation moves the TV from front (first image) to left (second image).",
+   vlms:[["GPT-4o","B",false],["Gemini 2.5 Flash","B",false],["Claude Sonnet 4.5","B",false]]},
+  {id:6, domain:"Goal Orientation", sub:"Object Relocation", img:"static/demo/case6.png",
+   q:"To take out the pot, how many levels should the hand move?",
+   opts:[["A","One layer upward"],["B","Two layers upward"],["C","One layer downward"],["D","No movement required"]], gt:"A",
+   graph:"The hand is on the third layer and the pot on the second, so the hand must move one layer upward.",
+   vlms:[["GPT-4o","B",false],["Gemini 2.5 Flash","A",true],["Claude Sonnet 4.5","C",false]]},
+  {id:5, domain:"Goal Orientation", sub:"Tool Assignment", img:"static/demo/case5.png",
+   q:"Which tool should be used to disassemble the toy?",
+   opts:[["A","Box-end wrench"],["B","Open-end wrench"],["C","Hex screwdriver"],["D","Phillips screwdriver"]], gt:"B",
+   graph:"The screw's cross-shape type determines which tool is used to disassemble the toy.",
+   vlms:[["GPT-4o","D",false],["Gemini 2.5 Flash","D",false],["Claude Sonnet 4.5","D",false]]},
+  {id:8, domain:"Goal Orientation", sub:"Behavior Selection", img:"static/demo/case8.png",
+   q:"To make the lighter fall onto the table, what should be done?",
+   opts:[["A","Lift the plate"],["B","Flip the plate"],["C","Drag the plate horizontally"],["D","Drop the plate"]], gt:"B",
+   graph:"The lighter rests on top of the plate, so flipping the plate causes the lighter to fall onto the table.",
+   vlms:[["GPT-4o","B",true],["Gemini 2.5 Flash","B",true],["Claude Sonnet 4.5","B",true]]},
+  {id:7, domain:"Goal Orientation", sub:"Trajectory Optimization", img:"static/demo/case7.png",
+   q:"Which direction should the player shoot the ball to score?",
+   opts:[["A","Left"],["B","Right"],["C","Straight ahead"]], gt:"B",
+   graph:"The goalkeeper is leaning left, so shooting right maximizes the chance of scoring.",
+   vlms:[["GPT-4o","A",false],["Gemini 2.5 Flash","A",false],["Claude Sonnet 4.5","A",false]]}
+];
+
+(function(){
+  const sel=document.getElementById('demo-select');
+  const img=document.getElementById('demo-img');
+  const qEl=document.getElementById('demo-q');
+  const optBox=document.getElementById('demo-options');
+  const valBtn=document.getElementById('demo-validate');
+  const resBox=document.getElementById('demo-result');
+  const DOMAINS=["Perception","Anticipation","Intervention","Goal Orientation"];
+  let cur=null, picked=null, answered=false;
+
+  // build grouped dropdown
+  DOMAINS.forEach(dom=>{
+    const g=document.createElement('optgroup'); g.label=dom;
+    DEMO.forEach((d,i)=>{ if(d.domain===dom){
+      const o=document.createElement('option'); o.value=i; o.textContent=d.sub; g.appendChild(o);
+    }});
+    sel.appendChild(g);
+  });
+
+  function load(i){
+    cur=DEMO[i]; picked=null; answered=false;
+    img.src=cur.img; img.alt=cur.sub;
+    qEl.textContent=cur.q;
+    optBox.innerHTML='';
+    cur.opts.forEach(([ltr,txt])=>{
+      const b=document.createElement('button');
+      b.className='demo-opt'; b.dataset.ltr=ltr;
+      b.innerHTML=`<span class="ltr">${ltr}.</span>${txt}`;
+      b.onclick=()=>{ if(answered) return;
+        picked=ltr;
+        optBox.querySelectorAll('.demo-opt').forEach(x=>x.classList.remove('sel'));
+        b.classList.add('sel'); valBtn.disabled=false; };
+      optBox.appendChild(b);
+    });
+    valBtn.disabled=true; valBtn.textContent='Validate';
+    resBox.style.display='none'; resBox.innerHTML='';
+  }
+
+  valBtn.onclick=()=>{
+    if(!picked||answered) return;
+    answered=true;
+    const correct = picked===cur.gt;
+    optBox.querySelectorAll('.demo-opt').forEach(b=>{
+      b.classList.remove('sel');
+      if(b.dataset.ltr===cur.gt) b.classList.add('correct');
+      else if(b.dataset.ltr===picked) b.classList.add('wrong');
+    });
+    const vlmRows = cur.vlms.map(([m,c,ok])=>
+      `<div class="vlm-row"><span><b>${m}</b> chose ${c}</span>
+       <span style="color:${ok?'#23924a':'#d62728'};font-weight:700;">${ok?'✓ correct':'✗ wrong'}</span></div>`).join('');
+    resBox.innerHTML=
+      `<div class="notification ${correct?'is-success':'is-danger'} is-light" style="border-radius:8px;">
+         <b>${correct?'Correct! 🎉':'Not quite.'}</b> Ground truth: <b>${cur.gt}</b>.
+       </div>
+       <p style="margin:0.6rem 0 0.3rem;"><b>Causal chain:</b> ${cur.graph}</p>
+       <p style="margin:0.9rem 0 0.3rem;"><b>How SOTA VLMs answered:</b></p>
+       ${vlmRows}`;
+    resBox.style.display='block';
+  };
+
+  sel.onchange=()=>load(parseInt(sel.value,10));
+  load(parseInt(sel.value,10));  // first dropdown option
+})();
+</script>
+</body>
+</html>
