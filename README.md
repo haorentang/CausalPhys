@@ -4,7 +4,6 @@
 
 > 🎉 **Accepted at KDD 2026 (Datasets and Benchmarks Track).**
 
-[![Conference](https://img.shields.io/badge/KDD%202026-Datasets%20%26%20Benchmarks-blue.svg)](https://kdd2026.kdd.org/)
 [![Project Page](https://img.shields.io/badge/🌐%20Project%20Page-causalphys-2ea44f.svg)](https://haorentang.github.io/CausalPhys/)
 [![Paper](https://img.shields.io/badge/📄%20Paper-2606.05966-b31b1b.svg)](https://arxiv.org/abs/2606.05966)
 [![Dataset](https://img.shields.io/badge/🤗%20Dataset-haorentang%2Fcausalphys-yellow)](https://huggingface.co/datasets/haorentang/causalphys)
